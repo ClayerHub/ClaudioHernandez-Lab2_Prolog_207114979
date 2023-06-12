@@ -1,11 +1,11 @@
 % Dominios
-% Sistema, NewSystem: Sistema
+% Sistema, NuevoSistema: Sistema
 % Letter, Nombre: Atomo
 % Capacidad: Numero
 % Resto: Variable
 
 % Predicados
-% systemAddDrive(Sistema, Letter, Nombre, Capacidad, NewSystem)
+% systemAddDrive(Sistema, Letter, Nombre, Capacidad, NuevoSistema)
 % letraUnica(Lista, Letter)
 % atomOChar(Letter)
 
@@ -16,7 +16,8 @@
 
 % Clausulas
 % Predicado que añade una unidad al sistema
-systemAddDrive(Sistema, Letter, Nombre, Capacidad, NewSystem) :- atomOChar(Letter), letraUnica(Sistema, Letter), append(Sistema, [[Letter, Nombre, Capacidad]], NewSystem).
+systemAddDrive(Sistema, Letter, Nombre, Capacidad, NuevoSistema) :- atomOChar(Letter), letraUnica(Sistema, Letter), append(Sistema, [[Letter, Nombre, Capacidad]], NuevoSistema).
+
 
 % Predicado que valida que una letra sea unica
 letraUnica([], _).
