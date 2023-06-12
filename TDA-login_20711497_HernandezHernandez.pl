@@ -10,4 +10,4 @@
 
 % Clausulas
 % Predicado que permite iniciar sesion si el usuario ya esta registrado
-systemLogin(Sistema, Usuario, NuevoSistema) :- \+ member(Usuario, Sistema), append(Sistema, [[Usuario, "Login"]], NuevoSistema).
+systemLogin(Sistema, Usuario, NuevoSistema) :- \+ member(Usuario, Sistema), append(Sistema, [["Login"]], NuevoSistema).
