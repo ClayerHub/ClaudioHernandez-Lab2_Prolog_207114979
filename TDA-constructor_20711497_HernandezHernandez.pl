@@ -4,18 +4,16 @@
 % Fecha: Numero
 
 % Predicados
-% crearSistema(Nombre, Sistema)
-% obtenerFecha(Fecha)
+% system(Nombre, Sistema)
+% fechaActual(Fecha)
 
 % Metas
-% crearSistema
-% obtenerFecha
+% system
+% fechaActual
 
 % Clausulas
 % Predicado que construye un sistema y deja registro de la fecha de creacion
-crearSistema(Nombre, Sistema) :-
-    obtenerFecha(Fecha),
-    Sistema = sistema(Nombre, Fecha).
+system(Nombre, Sistema) :- fechaActual(Fecha), Sistema = [system(Nombre, Fecha)].
 
 % Predicado que permite obtener la fecha actual
-obtenerFecha(Fecha) :- get_time(Fecha).
+fechaActual(Fecha) :- get_time(Fecha).
