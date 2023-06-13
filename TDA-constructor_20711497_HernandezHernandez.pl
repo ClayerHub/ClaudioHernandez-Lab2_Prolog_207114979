@@ -12,6 +12,8 @@
 % fechaActual
 
 % Clausulas
+:- module(TDA-constructor_20711497_HernandezHernandez, [system]).
+
 % Predicado que construye un sistema y deja registro de la fecha de creacion
 system(Nombre, Sistema) :- fechaActual(Fecha), Sistema = [system(Nombre, Fecha)].
 
