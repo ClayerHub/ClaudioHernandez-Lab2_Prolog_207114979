@@ -173,9 +173,9 @@ posicion_valor_aux(Valor, [_|Resto], PosicionActual, Posicion) :-
 % systemMkdir
 
 % Clausulas
-systemMkdir(Sistema, Nombre, NuevoSistema):- esList(Sistema), esString(Nombre), nombreUnico(Sistema, Nombre), nuevaCarpeta(Nombre, Sistema, NuevoSistema).
+systemMkdir(Sistema, Nombre, NuevoSistema):- esList(Sistema), esString(Nombre), nombreUnico(Sistema, Nombre), nuevaCarpeta(Nombre, Sistema, NuevoSistema, 6).
 
-nuevaCarpeta(Nombre, Sistema, NuevoSistema):- cualDoble(Sistema, Creador), nth1(6, Sistema, Direccion), fechaActual(Fecha), append(Sistema, [[Nombre, Creador, Direccion, Fecha, Fecha]], NuevoSistema).
+nuevaCarpeta(Nombre, Sistema, NuevoSistema, Ubicacion):- cualDoble(Sistema, Creador), nth1(Ubicacion, Sistema, Direccion), fechaActual(Fecha), append(Sistema, [[Nombre, Creador, Direccion, Fecha, Fecha]], NuevoSistema).
 
 %Predicado que entrega el valor que esta duplicado en la lista (usuario)
 cualDoble([Atomo|Resto], Atomo):- member(Atomo, Resto).
@@ -290,8 +290,10 @@ systemAddFile(Sistema, Archivo, NuevoSistema):- esList(Sistema), esList(Archivo)
 % systemDel
 
 % Clausulas
-systemDel(_, _, _).
+systemDel(Sistema, NombreArchivo, NuevoSistema):- 
+    esList(Sistema), esString(NombreArchivo), select([NombreArchivo | _], Sistema, NuevoSistema). 
 
+%-----------------------------------------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % NombreArchivo, Direccion: Atomo
@@ -303,7 +305,9 @@ systemDel(_, _, _).
 % systemCopy
 
 % Clausulas
-systemCopy(_, _, _, _).
+systemCopy(Sistema, Archivo, Ubicacion, NuevoSistema):- esList(Sistema), esString(Archivo), esString(Ubicacion),
+    member([Archivo | Resto], Sistema), append(Sistema, [[Archivo | Resto]], NuevoSistema).
+  
 
 % Dominios
 % Sistema, NuevoSistema: Sistema
@@ -329,8 +333,13 @@ systemMove(_, _, _, _).
 % systemRen
 
 % Clausulas
-systemRen(_, _, _, _).
+systemRen(Sistema, Archivo, NuevoNombre, NuevoSistema):- esList(Sistema), esString(Archivo), esString(NuevoNombre), cambiarNombre(Archivo, NuevoNombre, Sistema, NuevoSistema).
+cambiarNombre(_, _, [], []).
+cambiarNombre(NombreActual, NombreNuevo, [[NombreActual | Resto] | RestoSublistas], [[NombreNuevo | Resto]|RestoSublistas]) :- !.
+cambiarNombre(NombreActual, NombreNuevo, [Sublista | Resto], [Sublista | NuevoResto]):- cambiarNombre(NombreActual, NombreNuevo, Resto, NuevoResto).
 
+
+%--------------------------------------------------------------
 % Dominios
 % Sistema: Sistema
 % Parametro: Lista
