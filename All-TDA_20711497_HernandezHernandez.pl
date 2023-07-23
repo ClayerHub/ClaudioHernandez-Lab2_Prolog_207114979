@@ -196,20 +196,59 @@ nombreUnico([_ | Resto], Nombre) :- nombreUnico(Resto, Nombre).
 % systemCd
 
 % Clausulas
-systemCd(Sistema, Directorio, NuevoSistema):- esList(Sistema), esString(Directorio), direccionValida(Directorio, "."); 
-    esList(Sistema), esString(Directorio), direccionValida(Directorio, "..");
-    esList(Sistema), esString(Directorio), direccionValida(Directorio, "/"); 
-    esList(Sistema), esString(Directorio), direccionValida(Directorio, "./"); 
-    esList(Sistema), esString(Directorio), direccionValida(Directorio, "././././"); 
-    esList(Sistema), esString(Directorio), direccionValida(Directorio, "."); 
-    esList(Sistema), esString(Directorio), direccionValida(Directorio, "."); 
+systemCd(Sistema, Directorio, NuevoSistema):- esList(Sistema), esString(Directorio), direccionValida(Directorio, "."), NuevoSistema = Sistema;
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, ".."), dosIguales(Sistema), eliminarUltimoElementoSublista(Sistema, 6, 1, NuevoSistema);
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, ".."), dosIguales(Sistema), subListaUno(Sistema, 6), NuevoSistema = Sistema; 
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "/"), dosIguales(Sistema), subListaUno(Sistema, 6), NuevoSistema = Sistema;
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "/"), dosIguales(Sistema), unElementoSublista(Sistema, 6, NuevoSistema); 
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "./"), NuevoSistema = Sistema; 
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "././././"), NuevoSistema = Sistema;
+    esList(Sistema), esString(Directorio), nombreUnico(Sistema, Directorio), agregarASublista(Sistema, 6, Directorio, NuevoSistema). 
+    
 
-direccionValida(Directorio, Alternativa):- member(Directorio, Alternativa).
+
+
+%Con esto se llama eliminar_ultimo_elemento_sublista_posicion_aux(Lista, Posicion, 1, NuevaLista).
+
+eliminarUltimoElementoSublista([], _, _, []).
+eliminarUltimoElementoSublista([Sublista | Resto], Posicion, PosActual, [NuevaSublista | NuevoResto]):-
+    PosActual =:= Posicion, length(Sublista, Longitud), Longitud > 1, quitarUltimoElemento(Sublista, NuevaSublista),
+    NuevaPosActual is PosActual + 1, eliminarUltimoElementoSublista(Resto, Posicion, NuevaPosActual, NuevoResto).
+eliminarUltimoElementoSublista([Sublista | Resto], Posicion, PosActual, [Sublista | NuevoResto]) :-
+    NuevaPosActual is PosActual + 1, eliminarUltimoElementoSublista(Resto, Posicion, NuevaPosActual, NuevoResto).
+
+quitarUltimoElemento(Sublista, NuevaSublista):- append(NuevaSublista, [_], Sublista).
+
+dosIguales(Lista):- append(_, [X|Resto], Lista), member(X,Resto).
+
+subListaUno(Lista, Posicion):- nth1(Posicion, Lista, Sublista), length(Sublista, 1).
+
+unElementoSublista(Lista, Posicion, NuevaLista):- nth1(Posicion, Lista, Sublista), primerElemento(Sublista, PrimerElemento),
+    nuevaSublista(Posicion, [PrimerElemento], Lista, NuevaLista).
+
+primerElemento([PrimerElemento | _], PrimerElemento).
+
+nuevaSublista(Posicion, NuevaSublista, Lista, NuevaLista):- restarUno is Posicion - 1, length(Prefijo, restarUno), append(Prefijo, [_ | Resto], Lista),
+    append([Prefijo, NuevaSublista], Resto, NuevaLista).
+
+direccionValida(String, Opcion) :- String = Opcion.
+
+agregarASublista(Lista, Posicion, String, NuevaLista):- 
+    select(Sublista, Lista, Resto), nuevoString(Sublista, String, NuevaSublista),
+    guardarEnPosicion(NuevaSublista, Resto, Posicion, NuevaLista).
+
+nuevoString(Sublista, String, NuevaSublista):- append(Sublista, [String], NuevaSublista).
+
+guardarEnPosicion(_, [], 1, []).
+guardarEnPosicion(Elemento, Lista, 1, [Elemento | Lista]).
+guardarEnPosicion(Elemento, [Cabeza | Resto], Posicion, [Cabeza | NuevaLista]):- Posicion > 1,
+    Posicion1 is Posicion - 1, guardarEnPosicion(Elemento, Resto, Posicion1, NuevaLista).
+
+%----------------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
-% DatosArchivo: Lista
+% DatosArchivo: Lista./
 % NombreArchivo, Contenido: Atomo
-
 % Recorridos
 % file(NombreArchivo, Contenido, DatosArchivo)
 % systemAddFile(Sistema, DatosArchivo, NuevoSistema)
@@ -366,7 +405,3 @@ systemViewTrash(_, _).
 
 % Clausulas
 systemRestore(_, _, _).
-
-
-
-
