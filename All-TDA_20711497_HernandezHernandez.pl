@@ -176,6 +176,7 @@ posicion_valor_aux(Valor, [_|Resto], PosicionActual, Posicion) :-
 systemMkdir(Sistema, Nombre, NuevoSistema):- esList(Sistema), esString(Nombre), nombreUnico(Sistema, Nombre), nuevaCarpeta(Nombre, Sistema, NuevoSistema).
 
 nuevaCarpeta(Nombre, Sistema, NuevoSistema):- cualDoble(Sistema, Creador), nth1(6, Sistema, Direccion), fechaActual(Fecha), append(Sistema, [[Nombre, Creador, Direccion, Fecha, Fecha]], NuevoSistema).
+
 %Predicado que entrega el valor que esta duplicado en la lista (usuario)
 cualDoble([Atomo|Resto], Atomo):- member(Atomo, Resto).
 cualDoble([_|Resto], Duplicado):- cualDoble(Resto, Duplicado).
@@ -203,7 +204,7 @@ systemCd(Sistema, Directorio, NuevoSistema):- esList(Sistema), esString(Director
     esList(Sistema), esString(Directorio), direccionValida(Directorio, "/"), dosIguales(Sistema), unElementoSublista(Sistema, 6, NuevoSistema); 
     esList(Sistema), esString(Directorio), direccionValida(Directorio, "./"), NuevoSistema = Sistema; 
     esList(Sistema), esString(Directorio), direccionValida(Directorio, "././././"), NuevoSistema = Sistema;
-    esList(Sistema), esString(Directorio), nombreUnico(Sistema, Directorio), agregarASublista(Sistema, 6, Directorio, NuevoSistema). 
+    esList(Sistema), esString(Directorio), nombreUnico(Sistema, Directorio), agregarASublista(Sistema, 6, Directorio, NuevoSistema); NuevoSistema = Sistema. 
     
 
 
@@ -244,6 +245,21 @@ guardarEnPosicion(Elemento, Lista, 1, [Elemento | Lista]).
 guardarEnPosicion(Elemento, [Cabeza | Resto], Posicion, [Cabeza | NuevaLista]):- Posicion > 1,
     Posicion1 is Posicion - 1, guardarEnPosicion(Elemento, Resto, Posicion1, NuevaLista).
 
+
+agregar_string_sublista(Lista, Posicion, String, NuevaLista) :-
+    select(Sublista, Lista, Resto),
+    insertar_en_posicion(NuevaSublista, Resto, Posicion, NuevaLista),
+    agregar_string(Sublista, String, NuevaSublista).
+
+agregar_string(Sublista, String, NuevaSublista) :-
+    append(Sublista, [String], NuevaSublista).
+
+insertar_en_posicion(_, [], 1, []).
+insertar_en_posicion(Elemento, Lista, 1, [Elemento | Lista]).
+insertar_en_posicion(Elemento, [Cabeza | Resto], Posicion, [Cabeza | NuevaLista]) :-
+    Posicion > 1,
+    Posicion1 is Posicion - 1,
+    insertar_en_posicion(Elemento, Resto, Posicion1, NuevaLista).
 %----------------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
@@ -258,10 +274,11 @@ guardarEnPosicion(Elemento, [Cabeza | Resto], Posicion, [Cabeza | NuevaLista]):-
 % systemAddFile
 
 % Clausulas
-file(_, _, _).
-systemAddFile(_, _, _).
+file(Nombre, Contenido, Archivo):- Archivo = [Nombre, Contenido].
+systemAddFile(Sistema, Archivo, NuevoSistema):- esList(Sistema), esList(Archivo), append(Sistema, [Archivo], NuevoSistema).
 
 
+%----------------------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % NombreArchivo: Atomo
