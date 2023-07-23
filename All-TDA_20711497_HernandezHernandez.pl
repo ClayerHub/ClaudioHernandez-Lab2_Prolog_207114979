@@ -18,7 +18,7 @@ system(Nombre, Sistema) :- fechaActual(Fecha), Sistema = [system(Nombre, Fecha)]
 % Predicado que permite obtener la fecha actual
 fechaActual(Fecha) :- get_time(Fecha).
 
-
+%-----------------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % Letter, Nombre: Atomo
@@ -37,17 +37,24 @@ fechaActual(Fecha) :- get_time(Fecha).
 
 % Clausulas
 % Predicado que añade una unidad al sistema
-systemAddDrive(Sistema, Letter, Nombre, Capacidad, NuevoSistema) :- atomOChar(Letter), letraUnica(Sistema, Letter), append(Sistema, [[Letter, Nombre, Capacidad]], NuevoSistema).
+systemAddDrive(Sistema, Letter, Nombre, Capacidad, NuevoSistema) :- esList(Sistema),atomOUnicoChar(Letter),esString(Nombre),esInt(Capacidad), 
+    unidadUnica(Sistema, Letter), append(Sistema, [[Letter, Nombre, Capacidad]], NuevoSistema).
 
+% Predicado que valida que una unidad sea unica
+unidadUnica([], _).
+unidadUnica([[Letter, _, _] | _], Letter) :- !, fail.
+unidadUnica([_ | Resto], Letter) :- unidadUnica(Resto, Letter).
 
-% Predicado que valida que una letra sea unica
-letraUnica([], _).
-letraUnica([[Letter, _, _] | _], Letter) :- !, fail.
-letraUnica([_ | Resto], Letter) :- letraUnica(Resto, Letter).
-
+% Predicado que valida si un argumento es un string
+esString(String):-string(String).
+%Predicado que valida si un argumento es un entero
+esInt(Entero):-integer(Entero).
 % Predicado que valida si un argumento es un atomo o un string de un caracter
-atomOChar(Letter) :- (atom(Letter); string(Letter)), atom_length(Letter, 1).
-
+atomOUnicoChar(Char):-(atom(Char);(string(Char),string_length(Char,1))).
+%Predicado que valida si un argumento es una lista
+esList(Lista):-is_list(Lista).
+           
+%----------------------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % Usuario: Nombre
@@ -62,11 +69,15 @@ atomOChar(Letter) :- (atom(Letter); string(Letter)), atom_length(Letter, 1).
 
 % Clausulas
 % Predicado que registra un nuevo usuario unico
-systemRegister(Sistema, Usuario, NuevoSistema) :- usuarioUnico(Sistema, Usuario), append(Sistema, [[Usuario]], NuevoSistema); Sistema = NuevoSistema.
+systemRegister(Sistema, Usuario, NuevoSistema) :- esList(Sistema), esString(Usuario), usuarioUnico(Sistema, Usuario), append(Sistema, [[Usuario]], NuevoSistema); esList(Sistema), esString(Usuario), usuarioExistente(Sistema, Usuario), Sistema = NuevoSistema.
 
 % Predicado que verifica que el usuario ingresado sea unico
 usuarioUnico(Sistema, Usuario) :- \+ member([Usuario], Sistema).
 
+%Predicado que verifica que el usuario ingresado es igual a uno del sistema
+usuarioExistente(Sistema, Usuario) :- member([Usuario], Sistema).
+
+%--------------------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % Usuario: Atomo
@@ -79,14 +90,28 @@ usuarioUnico(Sistema, Usuario) :- \+ member([Usuario], Sistema).
 
 % Clausulas
 % Predicado que permite iniciar sesion si el usuario ya esta registrado
-systemLogin(Sistema, Usuario, NuevoSistema) :- \+ member(Usuario, Sistema), append(Sistema, [["Login"]], NuevoSistema).
+systemLogin(Sistema, Usuario, NuevoSistema) :- esList(Sistema), esString(Usuario), dosVeces([Usuario], Sistema), member([Usuario], Sistema), Sistema = NuevoSistema;
+    esList(Sistema), esString(Usuario), member([Usuario], Sistema), unicosAtomos(Sistema), append(Sistema, [[Usuario]], NuevoSistema).
 
+
+%Predicado que verifica la cantidad de veces que se repite un atomo en una lista
+repeticionesAtomo(_, [], 0).
+repeticionesAtomo(Atomo, [Atomo|Resto], N):- repeticionesAtomo(Atomo, Resto, M), N is M + 1.
+repeticionesAtomo(Atomo, [_|Resto], N):- repeticionesAtomo(Atomo, Resto, N).
+
+%Predicado que verifica si un argumento esta dos veces en una lista
+dosVeces(Atomo, Lista):- repeticionesAtomo(Atomo, Lista, 2).   
+
+%Predicado que verifica que todos los argumentos de una lista sean unicos
+unicosAtomos([]).
+unicosAtomos([X|Resto]):- not(member(X, Resto)), unicosAtomos(Resto).
+%----------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % Logeado: Atomo
 
 % Predicados
-% systemLogout(Sistema, NuevoSistema)
+%systemLogout(Sistema, NuevoSistema):- esList(Sistema), 
 % quitarElemento(Logeado, Sistema, NuevoSistema)
 
 % Metas
@@ -95,11 +120,21 @@ systemLogin(Sistema, Usuario, NuevoSistema) :- \+ member(Usuario, Sistema), appe
 
 % Clausulas
 % Predicado que cierra sesion de un usuario del sistema
-systemLogout(Sistema, NuevoSistema) :- member(["Login"], Sistema), quitarElemento(["Login"], Sistema, NuevoSistema).
+systemLogout(Sistema, NuevoSistema) :- esList(Sistema), verificarDupla(Sistema, Duplicado), eliminarCopia(Duplicado, Sistema, NuevoSistema);false.
+% Predicado que si detecta que un elemento esta anotado dos veces, entrega true
+verificarDupla([], false) :- false.
+verificarDupla([X|Resto], X) :- 
+    member(X, Resto).
+verificarDupla([X|Resto], Duplicado) :- 
+    \+ member(X, Resto), verificarDupla(Resto, Duplicado).
 
-% Predicado que elimina el elemento de una lista, y la entrega en una lista actualizada
-quitarElemento(Logeado, Sistema, NuevoSistema) :- select(Logeado, Sistema, NuevoSistema).
+%Predicado que elimina un valor que esta duplicado
+eliminarCopia(_, [], []).
+eliminarCopia(Atomo, [Atomo|Resto], Resto) :- !.
+eliminarCopia(Atomo, [X|Resto], [X|NuevaLista]) :- 
+    eliminarCopia(Atomo, Resto, NuevaLista).
 
+%--------------------------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % Unidad: Atomo
@@ -111,8 +146,22 @@ quitarElemento(Logeado, Sistema, NuevoSistema) :- select(Logeado, Sistema, Nuevo
 % systemSwitchDrive
 % Clausulas
 % Predicado que fija la unidad en la que el usuario realizara acciones
-systemSwitchDrive(Sistema, Unidad, NuevoSistema) :- member(["Login"], Sistema), member([Unidad,_,_], Sistema), NuevoSistema = Sistema.
+systemSwitchDrive(Sistema, Unidad, NuevoSistema) :- esList(Sistema), atomOUnicoChar(Unidad), verificarDupla(Sistema, _), valorEnSublista(Sistema, Unidad), append(Sistema, [[Unidad]], NuevoSistema).
 
+% Predicado para verificar si un elemento esta dentro de las sublistas
+valorEnSublista([], _):- false.
+valorEnSublista([Sublista|_], Valor) :- member(Valor, Sublista), !.
+valorEnSublista([_|Resto], Valor) :- valorEnSublista(Resto,Valor).
+
+
+posicion_valor(Valor, Lista, Posicion) :-
+    posicion_valor_aux(Valor, Lista, 1, Posicion).
+
+posicion_valor_aux(Valor, [Valor|_], Posicion, Posicion).
+posicion_valor_aux(Valor, [_|Resto], PosicionActual, Posicion) :-
+    PosicionNueva is PosicionActual + 1,
+    posicion_valor_aux(Valor, Resto, PosicionNueva, Posicion).
+%--------------------------------------------------
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % NombreCarpeta: Atomo
@@ -124,8 +173,18 @@ systemSwitchDrive(Sistema, Unidad, NuevoSistema) :- member(["Login"], Sistema), 
 % systemMkdir
 
 % Clausulas
-systemMkdir(_, _, _).
+systemMkdir(Sistema, Nombre, NuevoSistema):- esList(Sistema), esString(Nombre), nombreUnico(Sistema, Nombre), nuevaCarpeta(Nombre, Sistema, NuevoSistema).
 
+nuevaCarpeta(Nombre, Sistema, NuevoSistema):- cualDoble(Sistema, Creador), nth1(6, Sistema, Direccion), fechaActual(Fecha), append(Sistema, [[Nombre, Creador, Direccion, Fecha, Fecha]], NuevoSistema).
+%Predicado que entrega el valor que esta duplicado en la lista (usuario)
+cualDoble([Atomo|Resto], Atomo):- member(Atomo, Resto).
+cualDoble([_|Resto], Duplicado):- cualDoble(Resto, Duplicado).
+
+nombreUnico([], _).
+nombreUnico([[Nombre, _, _, _, _] | _], Nombre) :- !, fail.
+nombreUnico([_ | Resto], Nombre) :- nombreUnico(Resto, Nombre).
+
+%--------------------------------------------------------------------
 % Dominios
 % Sistema9, NuevoSistema9: Sistema
 % Direccion9: Atomo
@@ -137,8 +196,15 @@ systemMkdir(_, _, _).
 % systemCd
 
 % Clausulas
-systemCd(_, _, _).
+systemCd(Sistema, Directorio, NuevoSistema):- esList(Sistema), esString(Directorio), direccionValida(Directorio, "."); 
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "..");
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "/"); 
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "./"); 
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "././././"); 
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "."); 
+    esList(Sistema), esString(Directorio), direccionValida(Directorio, "."); 
 
+direccionValida(Directorio, Alternativa):- member(Directorio, Alternativa).
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % DatosArchivo: Lista
@@ -300,6 +366,7 @@ systemViewTrash(_, _).
 
 % Clausulas
 systemRestore(_, _, _).
+
 
 
 
