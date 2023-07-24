@@ -1,3 +1,4 @@
+:- module(system_207114979_HernandezHernandez, [system/2, fechaActual/1]).
 % Dominios
 % Nombre: Atomo
 % Sistema: Sistema
