@@ -1,0 +1,35 @@
+Requerimientos No Funcionales
+Autoevaluación: 1
+Lenguaje: 1
+Versión: 1
+Standard: 1
+Documentación: 0.75
+Organización: 1
+Historial: 
+Script de pruebas: 0.5
+Prerrequisitos: 1
+
+Requerimientos Funcionales
+TDAs: 1
+TDA system - constructor: 1
+TDA system - addDrive: 1
+TDA system - register: 1
+TDA system - login: 1
+TDA system - logout: 1
+TDA system - switch-drive: 1
+TDA system - mkdir: 1
+TDA system- cd (change directory): 0.5
+TDA system - add-file: 1
+TDA system - del: 1
+TDA system - copy: 0.5
+TDA system - move: 0
+TDA system - ren (rename): 1
+TDA system - dir (directory): 0
+TDA system - format: 0
+TDA system - encrypt: 0
+TDA system - decrypt: 0
+TDA system - grep: 0
+TDA system - view-trash: 0
+TDA system - restore: 0
+
+Nota Estimada: 4.2
