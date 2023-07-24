@@ -1,12 +1,13 @@
+:- module(systemAddDrive_207114979_HernandezHernandez, [systemAddDrive/5, esString/1, esInt/1, atomOUnicoChar/1, esList/1]).
+
 % Dominios
 % Sistema, NuevoSistema: Sistema
 % Letter, Nombre: Atomo
 % Capacidad: Numero
+% Resto, String, Entero, Char, Lista = Variables
 
 % Predicados
 % systemAddDrive(Sistema, Letter, Nombre, Capacidad, NuevoSistema)
-% letraUnica(Lista, Letter)
-% atomOChar(Letter)
 % esString(String)
 % esInt(Entero)
 % atomOUnicoChar(Char)
@@ -14,8 +15,6 @@
 
 % Metas
 % systemAddDrive
-% letraUnica
-% atomOChar
 % esString
 % esInt
 % atomOUnicoChar
