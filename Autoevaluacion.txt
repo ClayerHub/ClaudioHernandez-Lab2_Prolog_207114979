@@ -5,7 +5,7 @@ Versión: 1
 Standard: 1
 Documentación: 0.75
 Organización: 1
-Historial: 
+Historial: 1
 Script de pruebas: 0.5
 Prerrequisitos: 1
 
@@ -22,14 +22,14 @@ TDA system- cd (change directory): 0.5
 TDA system - add-file: 1
 TDA system - del: 1
 TDA system - copy: 0.5
-TDA system - move: 0
+TDA system - move: 0.25
 TDA system - ren (rename): 1
-TDA system - dir (directory): 0
-TDA system - format: 0
-TDA system - encrypt: 0
-TDA system - decrypt: 0
-TDA system - grep: 0
-TDA system - view-trash: 0
-TDA system - restore: 0
+TDA system - dir (directory): 0.25
+TDA system - format: 0.25
+TDA system - encrypt: 0.25
+TDA system - decrypt: 0.25
+TDA system - grep: 0.25
+TDA system - view-trash: 0.25
+TDA system - restore: 0.25
 
-Nota Estimada: 4.2
+Nota Estimada: 4.5
